@@ -7,6 +7,14 @@ module.exports.undo = () => modify("isUndo")
 function modify (undo) {
 	
 	if(!process.platform.startsWith("win")) throw new Error("Supported only Windows!")
+		
+	global.tasks = {
+		
+		"NATIVE": false,
+		
+		"GLOBAL": false
+		
+	};
 	
 	const NODE_NATIVE_PATH = path.join(process.execPath, "..")
 	
@@ -22,24 +30,41 @@ function modify (undo) {
 	
 	const NPM_APPDATA_GLOBAL_PATH = NPM_APPDATA_PATH + NPM_NODE_MODULES_PATH + "bin\\npm-cli.js"
 	
-	
-	global.NPM_CLI = !undo ? __dirname + "\\npm-cli-mod.js" : __dirname + "\\npm-cli-orig.js"
-	
-	
-	
-	_process(NPM_NATIVE_BIN_PATH + "npm-cli.js")
-	
-	if( fs.existsSync( NPM_APPDATA_GLOBAL_PATH ) ) _process(NPM_APPDATA_GLOBAL_PATH)
+	const NPM_GLOBAL_PATH_BY_ARGV = process.argv[1] ? path.join(process.argv[1], "../../../npm/bin/npm-cli.js") : false
 	
 	
 	
-	console.log("Done!")
+	global.NPM_CLI = !undo ? path.join(__dirname, 'npm-cli-mod.js') : path.join(__dirname, 'npm-cli-orig.js')
+	
+	
+	
+	if( fs.existsSync( NPM_NATIVE_BIN_PATH ) ) _process(NPM_NATIVE_BIN_PATH + "npm-cli.js", "NATIVE")
+	
+	if( fs.existsSync( NPM_APPDATA_GLOBAL_PATH ) ) _process(NPM_APPDATA_GLOBAL_PATH, "GLOBAL")
+		
+	if( !global.tasks.GLOBAL && NPM_GLOBAL_PATH_BY_ARGV && fs.existsSync( NPM_GLOBAL_PATH_BY_ARGV ) ) _process(NPM_GLOBAL_PATH_BY_ARGV, "GLOBAL")
+	
+	
+	
+	if(!global.tasks.NATIVE) {
+		
+		console.error("\n Error! Npm native path not found!")
+		
+	}
+	
+	if(!global.tasks.GLOBAL) {
+		
+		console.error("\n Error! Npm global path not found!")
+		
+	}
+	
+	console.log("\n Done!")
 	
 }
 
-function _process (_path) {
+function _process (_path, task) {
 	
-	console.log("Starting modify " + _path)
+	console.log("\n Starting modify " + _path)
 	
 	const NPM_CLI_DATA = fs.readFileSync(global.NPM_CLI).toString()
 	
@@ -47,9 +72,11 @@ function _process (_path) {
 		
 		fs.writeFileSync(_path, NPM_CLI_DATA, {flag: "w"})
 		
+		global.tasks[task] = true
+		
 	} catch(e) {
 		
-		if(e.code.includes("EPERM")) console.error("Run it as administrator!")
+		if(e.code.includes("EPERM")) throw new Error("Run it as administrator!")
 		else throw new Error(e)
 		
 	}
