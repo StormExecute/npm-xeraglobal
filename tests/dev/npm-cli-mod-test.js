@@ -221,8 +221,6 @@
 	
 	if((npm.command == "i" || npm.command == "install" ) && ___CUSTOM_ARGV_FILTER.length) {
 		
-		//Тута мы нахуй сносим зависимости ибо изза них могут поставиться хуёво тупа все модули коренные
-		
 		try {
 
 		  var pkg = JSON.parse(fs.readFileSync(npm.prefix + "\\package.json").toString())
@@ -252,24 +250,6 @@
       if(isTempChangeConfig != null) npm.config.set("package-lock", isTempChangeConfig)
 
       if(!err && (npm.command == "i" || npm.command == "install") && ___CUSTOM_ARGV_FILTER.length) {
-
-        /*
-
-          #MODIFICATION
-          #XER
-          #ХУЙ
-
-          Кароче, эта хуйня будет ставить модули аля херо-глобально, дабы можно было реквайрить, к примеру, гальп, вебпак итд из любого проекта, а не ставить в каждый блять ебучий проект отдельно все зависимости.
-
-          ПРИМЕЧАНИЕ: Не ссым за --save, --save-dev итд, эта хуйня прекрасно эмулирует свою работу, так что, в package.json будут ебарица нужные зависимости для тех, кто скачает прожект с гита и выполнит npm i
-
-          #ВСЕ_КАК_У_ПЕТУХОНА
-
-          #ПОХУЙ_НА_КОЛЛБЕКИ_И_ХУЙНЮ
-
-          @author Отец Пётр IX, npm -v 5.6.0
-
-        */
 
         log.disableProgress()
 
@@ -367,7 +347,7 @@
 
         newModules.splice(newModules.indexOf(thisModule), 1)
 
-        console.log("\n Начинаем копирование в херо-глобальную директорию: " + globalXer)
+        console.log("\n Starting copy to: " + globalXer)
 
         //console.log(newModules, xeroModules, npm.argv, npm.prefix)
 
@@ -386,7 +366,7 @@
 
               if(!data) {
 
-                err = "Опач а у main модуля то нема тедди пакетикв)"
+                err = "Error!"
                 return errorHandler.apply(self, arguments)
 
               }
@@ -539,11 +519,11 @@
 
           }, function(thErr) {
 
-            if(thErr) console.error("Ерророчка!", thErr);
+            if(thErr) console.error("Error!", thErr);
 
             deleteFolderRecursive(npm.prefix + "\\node_modules\\");
 
-            console.log("\n Хуяк блять схуяропировали топ")
+            console.log("\n Done")
 
             /*
 			
