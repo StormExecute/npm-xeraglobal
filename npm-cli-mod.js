@@ -575,7 +575,7 @@
 				
 			if(this.isXerUp) return this.xerUp()
 				
-			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && !this.isXerInstalling) this.backupPkg()
+			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && !this.isXerInstalling && npm.argv[0]) this.backupPkg()
 			
 		}
 		
@@ -611,7 +611,7 @@
 				
 				if(!process.env.USERPROFILE && _self.isXerInstalling) return errorHandler(new Error("process.env.USERPROFILE is not defined!"))
 				
-				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1)) {
+				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1 && npm.argv[0])) {
 					
 					_self.defaultPkgJSONIfNotExists = {
 						"__modifiedBy": "npm-xeraglobal",
