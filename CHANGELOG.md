@@ -1,5 +1,19 @@
 # npm-xeraglobal changelog
 
+## v2.2.1
+
+English:
+
+* Added protection against xera modifications:
+	* If in package.json had no dependencies and devDependencies, then ```npm r <module>``` will do nothing. The original ```npm remove``` would have created an empty dependency object along with package.lock.json.
+	* ```npm r <module> -g``` now doesn't make unnecessary changes to the package.json.
+
+Русский:
+
+* Добавлена защита от xera модификаций:
+	* Если в package.json не было dependencies и devDependencies, то ```npm r <module>``` ничего не сделает. Оригинальный ```npm remove``` создал бы пустой объект зависимости вместе с package.lock.json.
+	* ```npm r <module> -g``` теперь не обновляет текущий package.json лишними модификациями.
+
 ## v2.2.0
 
 English:
