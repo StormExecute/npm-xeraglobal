@@ -12,6 +12,10 @@ The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_
 
 Основная задача флага -x заключается в том, что он ставит модули в папки %HOMEPATH%/.node_modules/ и %GlobalDirNpm%, при этом сохраняя зависимости в package.json.
 
+# Changelog
+
+[HERE!](https://github.com/StormExecute/npm-xeraglobal/blob/master/CHANGELOG.md)
+
 # Installation | Установка
 
 ```
