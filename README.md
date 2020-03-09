@@ -14,12 +14,15 @@ The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_
 
 # Installation | Установка
 
-***To update, you should also run these commands.***
-
-***Для обновления вам также следует выполнить данные команды.***
-
 ```
 npm install npm-xeraglobal -g
+npmxer
+```
+
+# Update | Обновление
+
+```
+npm update npm-xeraglobal -g
 npmxer
 ```
 
@@ -47,11 +50,37 @@ If the package.json does not exist - it will be created.
 npm [xerup|upxer|upp||uppackages] <pkg1,pkg2...> [-S|-D|--save|--save-dev](optional, default: -S)
 ```
 
+# Sorting dependencies | Сортировка зависимостей
+
+This will sort dependencies and devDependencies by name.
+
+Это отсортирует dependencies и devDependencies по имени.
+
+```
+npm [xerup|upxer|upp||uppackages] [s|srt|st|sort]
+```
+
+Example: ```npm xerup sort```.
+
+# Reversing dependencies | Перестановка зависимостей
+
+This will reverse the contrary dependencies and devDependencies.
+
+Это переставит dependencies и devDependencies местами.
+
+```
+npm [xerup|upxer|upp||uppackages] [rv|rvs|rvrs|reverse]
+```
+
+Example: ```npm upxer rvrs```.
+
 # Removing dependencies | Удаление зависимостей
 
 ```
 npm [xerup|upxer|upp||uppackages] [null|d|r|rm|remove|delete] <pkg1,pkg2...> [-S|-D|--save|--save-dev](optional, default: -S)
 ```
+
+Example: ```npm upp null gulp webpack webpack-stream del```
 
 # Undo | Откат
 
@@ -74,9 +103,9 @@ D:\NodeProjects\yourProject> npm i gulp -x -D
 D:\NodeProjects\yourProject> npm i browser-sync --xer -D
 ```
 
-***FOR RUSSIANS!***
+***FOR RUSSIANS ONLY!***
 
-***ДЛЯ РУССКИХ!***
+***ТОЛЬКО ДЛЯ РУССКИХ!***
 
 Так, впринципе, тоже можно :D
 
@@ -160,11 +189,12 @@ D:\NodeProjects\testProject> gulp
 # Contacts | Контакты
 
 **Yandex Mail** - vladimirvsevolodovi@yandex.ru
-**Github** - https://github.com/StormExecute
+
+**Github** - https://github.com/StormExecute/
 
 # Github
 
-**StormExecute** - https://github.com/StormExecute
+**StormExecute** - https://github.com/StormExecute/npm-xeraglobal/
 
 # License | Лицензия
 
