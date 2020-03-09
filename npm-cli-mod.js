@@ -52,6 +52,8 @@
 	}
 	
 	
+	const isGlobalArgvOriginal = !!process.argv.filter(el => el == "-g" || el == "--global").length
+	
 	
 	const xerUpArgv = ["xerup", "upxer", "upp", "uppackages"];
 	
@@ -81,11 +83,9 @@
 	
 	
 	
-	if(isXerInstalling) {
+	if(isXerInstalling && !isGlobalArgvOriginal) {
 		
-		const GlobalArgv = process.argv.filter(el => el == "-g" || el == "--global").length
-		
-		if(!GlobalArgv) process.argv.push("-g")
+		process.argv.push("-g")
 		
 	}
 	
@@ -358,9 +358,11 @@
 			
 		}
 		
-		getProjectPkg() {
+		getProjectPkg(checkDep) {
 			
 			var projectPackage = this.writeAndParsePackageSync(this.projectPkgPath)
+			
+			if(checkDep && !(projectPackage.dependencies || projectPackage.devDependencies)) return projectPackage
 		
 			for(let prop in this.defaultPkgJSONIfNotExists) {
 								  
@@ -525,13 +527,13 @@
 			
 			const _self = this;
 			
-			var projectPackage = this.getProjectPkg()
+			var projectPackage = this.getProjectPkg(true)
 			
 			_self.isUsuallyRemoving = null;
 			
 			["dependencies", "devDependencies"].forEach(dep => {
 				
-				if(!projectPackage[dep]) return
+				if(!projectPackage[dep]) return;
 				
 				if(!_self.isUsuallyRemoving) _self.isUsuallyRemoving = {}
 				
@@ -547,7 +549,16 @@
 				
 			})
 			
-			fs.writeFileSync(this.projectPkgPath, JSON.stringify(projectPackage, null, '\t'))
+			if(_self.isUsuallyRemoving) fs.writeFileSync(this.projectPkgPath, JSON.stringify(projectPackage, null, '\t'))
+			else {
+				
+				this.originalPkg = fs.readFileSync(this.projectPkgPath).toString()
+				
+				this.tempPkgLockCfg = npm.config.get("package-lock")
+				
+				npm.config.set("package-lock", false)
+				
+			}
 			
 		}
 		
@@ -557,13 +568,19 @@
 			
 			var projectPackage = this.getProjectPkg();
 			
-			Object.keys(this.isUsuallyRemoving).forEach(dep => {
-				
-				projectPackage[dep] = _self.isUsuallyRemoving[dep]
-				
-			})
+			if(this.isUsuallyRemoving) {
 			
-			fs.writeFileSync(this.projectPkgPath, JSON.stringify(projectPackage, null, '\t'))
+				Object.keys(this.isUsuallyRemoving).forEach(dep => {
+					
+					projectPackage[dep] = _self.isUsuallyRemoving[dep]
+					
+				})
+			
+			}
+			
+			fs.writeFileSync(this.projectPkgPath, this.originalPkg ? this.originalPkg : JSON.stringify(projectPackage, null, '\t'))
+			
+			if(this.tempPkgLockCfg) npm.config.set("package-lock", this.tempPkgLockCfg)
 			
 		}
 		
@@ -575,7 +592,7 @@
 				
 			if(this.isXerUp) return this.xerUp()
 				
-			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && !this.isXerInstalling && npm.argv[0]) this.backupPkg()
+			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && !this.isXerInstalling && npm.argv[0] && !isGlobalArgvOriginal) this.backupPkg()
 			
 		}
 		
@@ -611,7 +628,7 @@
 				
 				if(!process.env.USERPROFILE && _self.isXerInstalling) return errorHandler(new Error("process.env.USERPROFILE is not defined!"))
 				
-				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1 && npm.argv[0])) {
+				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1 && npm.argv[0] && !isGlobalArgvOriginal)) {
 					
 					_self.defaultPkgJSONIfNotExists = {
 						"__modifiedBy": "npm-xeraglobal",
@@ -667,7 +684,7 @@
 					
 					if(!err && _self.npmInstallCommands.indexOf(npm.command) !== -1 && _self.isXerInstalling) return _self.xerInstall()
 						
-					if(!err && _self.isUsuallyRemoving) _self.restorePkg()
+					if(!err && (_self.isUsuallyRemoving || _self.originalPkg)) _self.restorePkg()
 					
 					if (!err && npm.config.get('ham-it-up') && !npm.config.get('json') && !npm.config.get('parseable') && npm.command !== 'completion') {
 						output('\n 🎵 I Have the Honour to Be Your Obedient Servant,🎵 ~ npm 📜🖋\n')
