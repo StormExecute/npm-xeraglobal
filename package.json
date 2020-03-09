@@ -1,7 +1,14 @@
 {
   "name": "npm-xeraglobal",
   "version": "2.2.0",
+  "author": "cotenochek",
+  "license": "MIT",
   "description": "Npm-cli modifier. Adds the -x flag to install modules in %HOMEPATH%/.npm_modules (Windows only)",
+  "homepage": "https://github.com/StormExecute/npm-xeraglobal/#readme",
+  "repository": {
+	"type" : "git",
+	"url" : "https://github.com/StormExecute/npm-xeraglobal.git"
+  },
   "bin": {
     "npmxer": "bin/global.js",
     "npmunxer": "bin/globalUndo.js"
@@ -14,7 +21,5 @@
     "npm",
     "npm-cli",
     "npm-cli-modifier"
-  ],
-  "author": "cotenochek",
-  "license": "MIT"
+  ]
 }
