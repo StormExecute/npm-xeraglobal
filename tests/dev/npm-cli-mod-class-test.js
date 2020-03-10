@@ -270,7 +270,7 @@
 		
 		bCRRemove() {
 
-			console.log("\n Начинаем ебение из херо-глобальной директории: " + this.globalXerPath)
+			console.log("\n Removing from: " + this.globalXerPath)
 
 			let itWasRealDeleting = false;
 
@@ -320,8 +320,8 @@
 
 			if( fs.existsSync( this.projectNodeModulesPath ) ) this.deleteFolderRecursive(this.projectNodeModulesPath)
 
-			if(itWasRealDeleting) console.log("\n Хуяк выебали хуеглобалку!")
-			else console.error("\n Пиздец, модуля итак нема блеат!")
+			if(itWasRealDeleting) console.log("\n Done!")
+			else console.error("\n Ooops!")
 
 			return errorHandler(null)
 			
@@ -393,7 +393,9 @@
 				
 				npm.commands[npm.command](npm.argv, function (err) {
 					
-					/*??? ЕБУЧИЕ БЛЯТЬ ПАСКАЛКИ
+					/*
+			
+								ЕБП
 
 					─────────────────────────────
 					────────────▄████▄───────────
@@ -427,9 +429,9 @@
 
 					https://www.youtube.com/watch?v=7nfPu8qTiQU
 
-					НА НАХЦЙ
+					НА НАЦЙ
 
-					http://porno365.blog/movie/21304
+					https://vk.cc/ar6lDt
 
 					*/
 					
@@ -469,8 +471,6 @@
 				
 				if( fs.existsSync( xerPathOfDependency ) ) {
 					
-					//если это установка локал коров хероглобально то ничего не делаем, дабы не конфликтовать с версиями
-					
 					if(_deleteProjectNodeModules) return
 					
 					const xerPathOfThePackageOfDependency = xerPathOfDependency + "\\package.json"
@@ -483,8 +483,6 @@
 						
 						const pkgOfProjectDep = _self.writeAndParsePackageSync(pathOfThePackageOfProjectDep)
 						
-						//если же это установка джаст хероглобальная то если версии не равны записываем их в devDependencies текущего инсталлируемого пакета.
-						
 						if(pkgOfDep.version != pkgOfProjectDep.version) {
 							
 							return this.additionalDevDependencies.push(dependencyPath)
@@ -492,12 +490,6 @@
 						}
 						
 					} else return _self.copyFolderRecursiveSync(dependencyPath, _self.xerDependenciesPath)
-					
-					/* else if(path.basename(dependencyPath) == ".bin") {
-						
-						return _self.copyFolderRecursiveSync(dependencyPath, _self.xerDependenciesPath)
-						
-					} else return console.warn("\n Хопоп а где пакетик лол? " + xerPathOfThePackageOfDependency) */
 					
 				} else {
 			
@@ -549,7 +541,7 @@
 			
 			if(!this.installingModuleName) {
 				
-				console.log("\n Начинаем копирование локал депенденсисов в херо-глобальную директорию: " + this.xerDependenciesPath)
+				console.log("\n Starting copy to: " + this.xerDependenciesPath)
 				
 				this.projectNodeLocalDependencies = this.projectNodeModules
 				
@@ -670,8 +662,6 @@
 			
 			for(let i = 0; i < this.additionalDevDependencies.length; i++) {
 				
-				//по факту если есть дополнительные зависимости то ноде модулес существует
-				
 				this.copyFolderRecursiveSync(this.additionalDevDependencies[i], this.installingModulePath + "\\node_modules")
 				
 			}
@@ -695,8 +685,6 @@
 				if(fs.existsSync(this.installingModulePath + "\\node_modules\\" + nameDep)) continue
 				
 				if(fs.existsSync(xerPathOfThisDependency)) {
-				
-					//здесь не бин и не что то такое потому пакет жсон должен быть
 					
 					const pathOfThePackageOfThDependency = thMainDependencyPath + "\\package.json"
 					
