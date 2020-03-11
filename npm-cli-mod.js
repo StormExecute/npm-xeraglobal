@@ -292,6 +292,8 @@
 		bCRRemove() {
 
 			console.log("\n Removing from " + this.globalXerPath)
+			
+			npm.argv[0] = this.realInstallingModuleName
 
 			let itWasRealDeleting = false;
 
@@ -299,7 +301,7 @@
 
 				itWasRealDeleting = true;
 
-				this.deleteFolderRecursive(this.xerMainModulePath)
+				this.deleteFolderRecursive(this.realRemovingModulePath ? this.realRemovingModulePath : this.xerMainModulePath)
 				
 				if(fs.existsSync(this.projectPkgPath)) {
 
@@ -311,9 +313,9 @@
 						
 						if(projectPackage[dep]) {
 							
-							if(projectPackage[dep][_self.installingModuleName]) {
+							if(projectPackage[dep][_self.realInstallingModuleName]) {
 								
-								delete projectPackage[dep][_self.installingModuleName]
+								delete projectPackage[dep][_self.realInstallingModuleName]
 								
 							}
 							
@@ -509,17 +511,65 @@
 			
 			this.globalXerPath = process.env.USERPROFILE + "\\.node_modules"
 			
-			this.installingModuleName = npm.argv[0]
+			let npmArgv = npm.argv[0]
+			
+			if(npmArgv) {
+				
+				if(npmArgv.split("@").length == 3) {
+					
+					let origNpmArgv = npmArgv
+					
+					npmArgv = origNpmArgv.split("/")[0]
+					
+					this.realInstallingModuleName = "@" + origNpmArgv.split("@")[1]
+					
+					this.realRemovingModulePath = this.globalXerPath + "\\" + this.realInstallingModuleName
+					
+					//this.extraDelete = true
+					
+				} else if(npmArgv.startsWith("@")) {
+					
+					let origNpmArgv = npmArgv
+					
+					npmArgv = origNpmArgv.split("/")[0]
+					
+					this.realRemovingModulePath = this.globalXerPath + "\\" + origNpmArgv
+					
+					//this.extraDelete = true
+					
+				} else if(npmArgv.includes("@") && !npmArgv.startsWith("@")) {
+					
+					npmArgv = npmArgv.split("@")[0]
+					
+					this.realInstallingModuleName = npmArgv
+					
+				}
+				
+			}
+			
+			this.installingModuleName = npmArgv
+			
+			if(!this.realInstallingModuleName) this.realInstallingModuleName = npm.argv[0]
 			
 			this.globalDirModulePath = this.GLOBAL_DIR + "\\" + this.installingModuleName
+			
+			this.globalDirRealModulePath = this.GLOBAL_DIR + "\\" + this.realInstallingModuleName
 							 
 			this.globalDirPkgPath = this.globalDirModulePath + "\\package.json"
 			
+			this.globalDirRealPkgPath = this.globalDirRealModulePath + "\\package.json"
+			
 			this.projectPkgPath = npm.localPrefix + "\\package.json"
 			
-			this.xerMainModulePath = this.globalXerPath + "\\" + npm.argv[0]
+			this.xerMainModulePath = this.globalXerPath + "\\" + this.installingModuleName
+			
+			this.xerMainRealModulePath = this.globalXerPath + "\\" + this.realInstallingModuleName
 			
 			this.xerMainModulePackagePath = this.xerMainModulePath + "\\package.json"
+			
+			this.xerMainRealModulePackagePath = this.xerMainRealModulePath + "\\package.json"
+			
+			//console.log(this.xerMainModulePath, this.installingModuleName, this.realInstallingModuleName, this.realRemovingModulePath, npm.argv[0])
 			
 		}
 		
@@ -541,7 +591,7 @@
 				
 				for(let dependency in _self.isUsuallyRemoving[dep]) {
 					
-					if(dependency == _self.installingModuleName) delete _self.isUsuallyRemoving[dep][dependency]
+					if(dependency == _self.realInstallingModuleName) delete _self.isUsuallyRemoving[dep][dependency]
 					
 				}
 				
@@ -700,7 +750,8 @@
 		
 		xerActions(existXer) {
 			
-			if(existXer) deleteFolderRecursive(this.xerMainModulePath)
+			if(existXer) this.deleteFolderRecursive(this.xerMainModulePath)
+			else if(this.realRemovingModulePath && fs.existsSync(this.xerMainRealModulePath)) this.deleteFolderRecursive(this.xerMainRealModulePath)
 				
 			this.copyFolderRecursiveSync(this.globalDirModulePath, this.globalXerPath)
 			
@@ -714,7 +765,7 @@
 				
 			console.log("\n Starting copy to " + this.globalXerPath);
 			
-			if(fs.existsSync(this.xerMainModulePackagePath) && fs.existsSync(this.globalDirPkgPath)) {
+			if(fs.existsSync(this.xerMainModulePackagePath) /* && fs.existsSync(this.globalDirPkgPath) */) {
 			
 				const xerMainModulePkg = this.writeAndParsePackageSync(this.xerMainModulePackagePath)
 				
@@ -732,7 +783,7 @@
 		
 		writeSupport() {
 			
-			if(this.installingModuleName == "gulp") {
+			if(this.realInstallingModuleName == "gulp") {
 				
 				let liftoffPath = this.globalDirModulePath + "\\node_modules\\liftoff\\index.js"
 				
@@ -752,11 +803,14 @@
 			
 			const projectPackage = this.writeAndParsePackageSync(this.projectPkgPath)
 			
-			const globarDirPkg = this.writeAndParsePackageSync(this.globalDirPkgPath) 
+			let globarDirPkg = {}
+			
+			if(fs.existsSync(this.globalDirPkgPath)) globarDirPkg = this.writeAndParsePackageSync(this.globalDirPkgPath) 
+			else globarDirPkg = this.writeAndParsePackageSync(this.globalDirRealPkgPath)
 			
 			if(!projectPackage[dependencyName]) projectPackage[dependencyName] = {}
 				
-			projectPackage[dependencyName][this.installingModuleName] = "^" + globarDirPkg.version
+			projectPackage[dependencyName][this.realInstallingModuleName] = "^" + globarDirPkg.version
 			
 			projectPackage.__modifiedBy = "npm-xeraglobal"
 
