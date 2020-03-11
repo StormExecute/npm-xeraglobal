@@ -1,6 +1,6 @@
 {
   "name": "npm-xeraglobal",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "author": "cotenochek",
   "license": "MIT",
   "description": "Npm-cli modifier. Adds the -x flag to install modules in %HOMEPATH%/.npm_modules (Windows only)",
