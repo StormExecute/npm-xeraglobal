@@ -41,6 +41,7 @@
 	
 	const fs = require('fs')
 	const path = require('path')
+	const rimraf = require('rimraf')
 	
 	// if npm is called as "npmg" or "npm_g", then
 	// run in global mode.
@@ -213,34 +214,6 @@
 			
 		}
 		
-		deleteFolderRecursive(source) {
-			
-			const _self = this;
-
-			fs.readdirSync(source).forEach((file, index) => {
-
-				const curPath = path.join(source, file);
-
-				if (fs.lstatSync(curPath).isDirectory()) { 
-
-					// recurse
-
-					_self.deleteFolderRecursive(curPath);
-
-				} else { 
-
-					// delete file
-
-					fs.unlinkSync(curPath);
-
-				}
-
-			});
-
-			fs.rmdirSync(source);
-			
-		}
-		
 		copyFileSync( source, target ) {
 
             var targetFile = target;
@@ -301,7 +274,7 @@
 
 				itWasRealDeleting = true;
 
-				this.deleteFolderRecursive(this.realRemovingModulePath ? this.realRemovingModulePath : this.xerMainModulePath)
+				rimraf.sync(this.realRemovingModulePath ? this.realRemovingModulePath : this.xerMainModulePath)
 				
 				if(fs.existsSync(this.projectPkgPath)) {
 
@@ -571,6 +544,8 @@
 			
 			//console.log(this.xerMainModulePath, this.installingModuleName, this.realInstallingModuleName, this.realRemovingModulePath, npm.argv[0])
 			
+			//errorHandler(null)
+			
 		}
 		
 		backupPkg() {
@@ -750,8 +725,8 @@
 		
 		xerActions(existXer) {
 			
-			if(existXer) this.deleteFolderRecursive(this.xerMainModulePath)
-			else if(this.realRemovingModulePath && fs.existsSync(this.xerMainRealModulePath)) this.deleteFolderRecursive(this.xerMainRealModulePath)
+			if(existXer) rimraf.sync(this.xerMainModulePath)
+			else if(this.realRemovingModulePath && fs.existsSync(this.xerMainRealModulePath)) rimraf.sync(this.xerMainRealModulePath)
 				
 			this.copyFolderRecursiveSync(this.globalDirModulePath, this.globalXerPath)
 			
@@ -772,6 +747,7 @@
 				const globarDirPkg = this.writeAndParsePackageSync(this.globalDirPkgPath)
 
 				if(xerMainModulePkg.version != globarDirPkg.version || !xerMainModulePkg.version || !globarDirPkg.version) this.xerActions(true)
+				else this.writeSupport()
 				
 			} else this.xerActions()
 			
@@ -783,13 +759,41 @@
 		
 		writeSupport() {
 			
-			if(this.realInstallingModuleName == "gulp") {
+			if(this.installingModuleName == "gulp") {
 				
 				let liftoffPath = this.globalDirModulePath + "\\node_modules\\liftoff\\index.js"
 				
-				const origLiftoff = fs.readFileSync(liftoffPath).toString()
+				let liftoff = fs.readFileSync(liftoffPath).toString()
 				
-				fs.writeFileSync(liftoffPath, origLiftoff.replace(/modulePath(\s)?=(\s)?r.+;/, 'modulePath = process.env.USERPROFILE + "\\\\.node_modules\\\\gulp\\\\index.js"'))
+				liftoff = liftoff.replace(/modulePath(\s)?=(\s)?r.+;/, 'if(fs.existsSync(process.env.USERPROFILE + "\\\\.node_modules\\\\gulp\\\\index.js")) modulePath = process.env.USERPROFILE + "\\\\.node_modules\\\\gulp\\\\index.js";\n\telse resolve.sync(this.moduleName, { basedir: configBase || cwd, paths: paths });"')
+					
+				liftoff = liftoff.replace(/(var|const|let) path(\s)?=(\s)?require\(\'path\'\);/, "var path = require('path');\nvar fs = require('fs');")
+				
+				fs.writeFileSync(liftoffPath, liftoff)
+				
+			} else if(this.installingModuleName == "webpack" || this.installingModuleName == "webpack-stream") {
+				
+				let ResolverFactoryPath = this.globalXerPath + "\\" + this.installingModuleName + "\\node_modules\\enhanced-resolve\\lib\\ResolverFactory.js"
+				
+				let origResolverFactory = fs.readFileSync(ResolverFactoryPath).toString()
+				
+				fs.writeFileSync(ResolverFactoryPath, origResolverFactory.replace(/mainFields(\s)?=(\s)?mainFields.map/, 'modules.push(process.env.USERPROFILE + "\\\\.node_modules")\n\n\tmainFields = mainFields.map'))
+				
+			} else if(this.realInstallingModuleName == "@babel/core") {
+				
+				let nodeModulesPaths = this.globalXerPath + "\\" + this.realInstallingModuleName + "\\node_modules\\resolve\\lib\\node-modules-paths.js"
+				
+				let origResolve = fs.readFileSync(nodeModulesPaths).toString()
+				
+				fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, "['node_modules', process.env.USERPROFILE + '\\\\.node_modules']"))
+				
+			} else if(this.installingModuleName == "resolve") {
+				
+				let nodeModulesPaths = this.globalXerPath + "\\" + this.installingModuleName + "\\lib\\node-modules-paths.js"
+				
+				let origResolve = fs.readFileSync(nodeModulesPaths).toString()
+				
+				fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, "['node_modules', process.env.USERPROFILE + '\\\\.node_modules']"))
 				
 			}
 			
