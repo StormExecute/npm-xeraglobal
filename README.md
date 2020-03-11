@@ -18,15 +18,12 @@ The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_
 
 # Installation | Установка
 
+***To update, you should also run these commands.***
+
+***Для обновления вам также следует выполнить данные команды.***
+
 ```
 npm install npm-xeraglobal -g
-npmxer
-```
-
-# Update | Обновление
-
-```
-npm update npm-xeraglobal -g
 npmxer
 ```
 
