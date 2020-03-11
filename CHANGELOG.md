@@ -1,5 +1,49 @@
 # npm-xeraglobal changelog
 
+## v2.2.2
+
+English:
+
+* Added the following supports:
+	* Support for %HOMEPATH%/.node_modules for modules: webpack, webpack-stream, @babel/core, resolve.
+	* Versioned compatibility. Now you can use:
+		```
+		npm install [<@scope>/]<name> -x
+		npm install [<@scope>/]<name>@<tag> -x
+		npm install [<@scope>/]<name>@<version> -x
+		npm install [<@scope>/]<name>@<version range> -x
+		```
+		For example: 
+		```
+		npm i @babel/core -x
+		npm i @babel/core@7.0.0-beta.4 -x
+		npm i webpack@0.4.12 -x
+		```
+		This doesn't apply to ```npm install <git repo url> -x``` and similar manipulations.
+		In addition, multitasking ```npm i gulp webpack @babel/core @babel/preset-env --xer``` is not provided.
+		The best option would be to use: ```npm i gulp -x && npm i webpack -x```.
+
+Русский:
+
+* Добавлены следующие поддержки:
+	* Поддержка %HOMEPATH%/.node_modules для модулей: webpack, webpack-stream, @babel/core, resolve.
+	* Версионная совместимость. Теперь допустимо использование:
+		```
+		npm install [<@scope>/]<name> -x
+		npm install [<@scope>/]<name>@<tag> -x
+		npm install [<@scope>/]<name>@<version> -x
+		npm install [<@scope>/]<name>@<version range> -x
+		```
+		К примеру:
+		```
+		npm i @babel/core -x
+		npm i @babel/core@7.0.0-beta.4 -x
+		npm i webpack@0.4.12 -x
+		```	
+		Это не относится к ```npm install <git repo url> -x``` и подобным манипуляциям. 
+		Кроме того, многозадачность, аля ```npm i gulp webpack @babel/core @babel/preset-env --xer``` не предусматривается. 
+		Лучшим вариантом будет использование: ```npm i gulp -x && npm i webpack -x```.
+
 ## v2.2.1
 
 English:
