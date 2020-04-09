@@ -80,7 +80,7 @@
 	
 	
 	
-	var SaveArgv = 0, SaveDevArgv = 0
+	var SaveArgv = 0, SaveDevArgv = 0, DeleteTrash = 0
 	
 	
 	
@@ -96,6 +96,10 @@
 		SaveArgv = process.argv.filter(el => el == "-S" || el == "--save").length
 		
 		SaveDevArgv = process.argv.filter(el => el == "-D" || el == "--save-dev").length
+		
+		DeleteTrash = process.argv.filter(el => el == "-dt" || el == "--delete-trash").length
+		
+		if(isXerUp && DeleteTrash) throw new Error("npm xerup conflicts with flag --delete-trash");
 		
 		if(isXerUp) XerUpArgv = XerUpArgv.filter(el => el != "-S" && el != "--save" && el != "-D" && el != "--save-dev")
 		
@@ -256,6 +260,16 @@
 			
         }
 		
+		convertBackSlash(str) {
+			
+			if(process.platform.startsWith("win")) return str;
+			
+			return str = str
+				.replace(/\\\\/gmi, "/")
+				.replace(/\\/gmi, "/")
+			
+		}
+		
 		writeAndParsePackageSync(path) {
 			
 			return JSON.parse(fs.readFileSync(path).toString())
@@ -317,7 +331,7 @@
 			} */
 
 			if(itWasRealDeleting) console.log("\n Done!\n")
-			else console.error("\n Nothing happened (the removed module does not exist)!\n")
+			else console.error("\n Nothing happened (the module being deleted does not exist)!\n")
 
 			//return errorHandler(null)
 			
@@ -445,7 +459,7 @@
 					
 				}
 				
-				let thXerPackagePath = this.globalXerPath + "\\" + pkgName
+				let thXerPackagePath = this.convertBackSlash(this.globalXerPath + "\\" + pkgName)
 				
 				if(!fs.existsSync(thXerPackagePath)) {
 					
@@ -455,7 +469,7 @@
 					
 				}
 				
-				const thXerPackage = this.writeAndParsePackageSync(thXerPackagePath + "\\package.json")
+				const thXerPackage = this.writeAndParsePackageSync(this.convertBackSlash(thXerPackagePath + "\\package.json"))
 				
 				projectPackage[dependencyName][pkgName] = "^" + thXerPackage.version
 				
@@ -482,7 +496,7 @@
 		
 		beforeDefinePaths() {
 			
-			this.globalXerPath = process.env.USERPROFILE + "\\.node_modules"
+			this.globalXerPath = (process.env.USERPROFILE || ( process.env.SUDO_USER ? "\\home\\" + process.env.SUDO_USER : process.env.HOME ) ) + "\\.node_modules";
 			
 			let npmArgv = npm.argv[0]
 			
@@ -498,8 +512,6 @@
 					
 					this.realRemovingModulePath = this.globalXerPath + "\\" + this.realInstallingModuleName
 					
-					//this.extraDelete = true
-					
 				} else if(npmArgv.startsWith("@")) {
 					
 					let origNpmArgv = npmArgv
@@ -507,8 +519,6 @@
 					npmArgv = origNpmArgv.split("/")[0]
 					
 					this.realRemovingModulePath = this.globalXerPath + "\\" + origNpmArgv
-					
-					//this.extraDelete = true
 					
 				} else if(npmArgv.includes("@") && !npmArgv.startsWith("@")) {
 					
@@ -524,7 +534,7 @@
 			
 			if(!this.realInstallingModuleName) this.realInstallingModuleName = npm.argv[0]
 			
-			this.globalDirModulePath = this.GLOBAL_DIR + "\\" + this.installingModuleName
+			this.globalDirModulePath = this.GLOBAL_DIR + "\\" + this.installingModuleName //он шиндоус ту бэкслэш воркс бат он линукс ит дасэнт, \usr\lib\node_modules\\module
 			
 			this.globalDirRealModulePath = this.GLOBAL_DIR + "\\" + this.realInstallingModuleName
 							 
@@ -540,7 +550,36 @@
 			
 			this.xerMainModulePackagePath = this.xerMainModulePath + "\\package.json"
 			
-			this.xerMainRealModulePackagePath = this.xerMainRealModulePath + "\\package.json"
+			this.xerMainRealModulePackagePath = this.xerMainRealModulePath + "\\package.json";
+			
+			if(process.platform.includes("linux")) {
+			
+				[
+
+					"GLOBAL_DIR",
+					"realRemovingModulePath", 
+					"globalXerPath",
+					"installingModuleName",
+					"realInstallingModuleName",
+					"globalDirModulePath",
+					"globalDirRealModulePath",
+					"globalDirPkgPath",
+					"globalDirRealPkgPath",
+					"projectPkgPath",
+					"xerMainModulePath",
+					"xerMainRealModulePath",
+					"xerMainModulePackagePath",
+					"xerMainRealModulePackagePath",
+
+				].forEach(function(el) {
+
+					if(!this[el]) return
+
+					this[el] = this.convertBackSlash(this[el]);
+
+				}.bind(this));
+				
+			}
 			
 			//console.log(this.xerMainModulePath, this.installingModuleName, this.realInstallingModuleName, this.realRemovingModulePath, npm.argv[0])
 			
@@ -633,6 +672,8 @@
 			
 			_self.SaveDevArgv = SaveDevArgv
 			
+			_self.DeleteTrash = DeleteTrash
+			
 			_self.SaveArgv = SaveArgv
 			
 			_self.npmRemoveCommands = ["r", "rm", "remove", "un", "uninstall"]
@@ -647,11 +688,18 @@
 			
 			npm.load(conf, function (er) {
 				
+				//we don't check sudo_user (by installation), bcs npm checks it before cb
+				
 				if (er) return errorHandler(er)
 					
 				_self.checkUpdates()
 				
-				if(!process.env.USERPROFILE && _self.isXerInstalling) return errorHandler(new Error("process.env.USERPROFILE is not defined!"))
+				if(_self.isXerInstalling) {
+					
+					if(process.platform.startsWith("win") && !process.env.USERPROFILE) return errorHandler(new Error("process.env.USERPROFILE is not defined!"))
+					else if(process.platform.includes("linux") & !process.env.HOME) return errorHandler(new Error("process.env.HOME is not defined!"))
+					
+				}
 				
 				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1 && npm.argv[0] && !isGlobalArgvOriginal)) {
 					
@@ -670,7 +718,11 @@
 						"devDependencies": {}
 					}
 					
-					_self.GLOBAL_DIR = npm.globalDir
+					_self.GLOBAL_DIR = process.platform.startsWith("win") 
+						? npm.globalDir : 
+						process.execPath.includes(".nvm") 
+						? path.join(process.execPath, "../../lib/node_modules") 
+						: "/usr/lib/node_modules"
 					
 					_self.beforeCmdRun()
 					
@@ -732,13 +784,15 @@
 			
 			this.writeSupport()
 			
+			if(this.DeleteTrash && this.installingModuleName[0] != "@") this.DeleteTrashAction()
+			
 			this.writeDependencies()
 			
 		}
 		
 		xerInstall() {
 				
-			console.log("\n Starting copy to " + this.globalXerPath);
+			console.log("\n Start copying to " + this.globalXerPath);
 			
 			if(fs.existsSync(this.xerMainModulePackagePath) /* && fs.existsSync(this.globalDirPkgPath) */) {
 			
@@ -757,43 +811,140 @@
 			
 		}
 		
+		DeleteTrashAction() {
+			
+			//console.log("\n Deleting unnecessary items");
+			
+			const _self = this;
+			
+			const trashFolders = [
+				
+				".idea",
+				".git",
+				".github",
+				"example",
+				"examples",
+				"test",
+				"tests",
+				
+			];
+			
+			const trashFiles = [
+				
+				".npmignore",
+				".npmrc",
+				".gitattributes",
+				".gitignore",
+				".gitmodules",
+				".editorconfig",
+				".eslintignore",
+				".eslintrc",
+				".travis.yml",
+				".tidelift.yml",
+				"appveyor.yml",
+				"make",
+				"makefile",
+				"rakefile",
+				
+			];
+			
+			const trashFilesUpperCase = [
+				
+				"Make",
+				"Makefile",
+				"Rakefile",
+				
+			];
+			
+			trashFolders.concat(trashFiles).concat(trashFilesUpperCase).forEach(trash => {
+				
+				let trashPath = _self.convertBackSlash(_self.xerMainModulePath + "\\" + trash);
+				
+				if(fs.existsSync(trashPath)) rimraf.sync(trashPath);
+				
+			})
+
+		}
+		
 		writeSupport() {
+			
+			const HOME_FOLDER = process.platform.startsWith("win") ? "process.env.USERPROFILE" : "(!process.env.SUDO_USER ? process.env.HOME : ('/home/' + process.env.SUDO_USER))";
+			
+			let support = '';
 			
 			if(this.installingModuleName == "gulp") {
 				
 				let liftoffPath = this.globalDirModulePath + "\\node_modules\\liftoff\\index.js"
 				
-				let liftoff = fs.readFileSync(liftoffPath).toString()
+				liftoffPath = this.convertBackSlash(liftoffPath)
 				
-				liftoff = liftoff.replace(/modulePath(\s)?=(\s)?r.+;/, 'if(fs.existsSync(process.env.USERPROFILE + "\\\\.node_modules\\\\gulp\\\\index.js")) modulePath = process.env.USERPROFILE + "\\\\.node_modules\\\\gulp\\\\index.js";\n\telse resolve.sync(this.moduleName, { basedir: configBase || cwd, paths: paths });"')
+				let liftoffOrigin = fs.readFileSync(liftoffPath).toString()
+				
+				let liftoff = liftoffOrigin;
+				
+				if(!liftoffOrigin.includes("if(fs.existsSync(") || !liftoffOrigin.includes(".node_modules")) { // !!|| !&&
+				
+					support += this.convertBackSlash('if(fs.existsSync(' + HOME_FOLDER + ' + "\\\\.node_modules\\\\gulp\\\\index.js")) modulePath = ' + HOME_FOLDER + ' + "\\\\.node_modules\\\\gulp\\\\index.js";\n\telse modulePath = resolve.sync(this.moduleName, { basedir: configBase || cwd, paths: paths });');
+
+					liftoff = liftoff.replace(/modulePath(\s)?=(\s)?r.+;/, support)
 					
-				liftoff = liftoff.replace(/(var|const|let) path(\s)?=(\s)?require\(\'path\'\);/, "var path = require('path');\nvar fs = require('fs');")
+				}
 				
-				fs.writeFileSync(liftoffPath, liftoff)
+				if(!liftoffOrigin.match(/require\(['"]fs['"]\)/)) {
+					
+					liftoff = liftoff.replace(/(var|const|let) path(\s)?=(\s)?require(\s)?\(['"]path['"]\);/, "var path = require('path');\nvar fs = require('fs');")
+					
+				}
+				
+				if(liftoffOrigin != liftoff) fs.writeFileSync(liftoffPath, liftoff)
 				
 			} else if(this.installingModuleName == "webpack" || this.installingModuleName == "webpack-stream") {
 				
 				let ResolverFactoryPath = this.globalXerPath + "\\" + this.installingModuleName + "\\node_modules\\enhanced-resolve\\lib\\ResolverFactory.js"
 				
+				ResolverFactoryPath = this.convertBackSlash(ResolverFactoryPath)
+				
 				let origResolverFactory = fs.readFileSync(ResolverFactoryPath).toString()
 				
-				fs.writeFileSync(ResolverFactoryPath, origResolverFactory.replace(/mainFields(\s)?=(\s)?mainFields.map/, 'modules.push(process.env.USERPROFILE + "\\\\.node_modules")\n\n\tmainFields = mainFields.map'))
+				if(!origResolverFactory.includes(".node_modules")) {
+				
+					support += this.convertBackSlash('modules.push(' + HOME_FOLDER + ' + "\\\\.node_modules")\n\n\tmainFields = mainFields.map')
+					
+					fs.writeFileSync(ResolverFactoryPath, origResolverFactory.replace(/mainFields(\s)?=(\s)?mainFields.map/, support))
+					
+				}
 				
 			} else if(this.realInstallingModuleName == "@babel/core") {
 				
 				let nodeModulesPaths = this.globalXerPath + "\\" + this.realInstallingModuleName + "\\node_modules\\resolve\\lib\\node-modules-paths.js"
 				
+				nodeModulesPaths = this.convertBackSlash(nodeModulesPaths)
+				
 				let origResolve = fs.readFileSync(nodeModulesPaths).toString()
 				
-				fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, "['node_modules', process.env.USERPROFILE + '\\\\.node_modules']"))
+				if(!origResolve.includes(".node_modules")) {
+				
+					support = this.convertBackSlash("['node_modules', " + HOME_FOLDER + " + '\\\\.node_modules']")
+
+					fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, support))
+					
+				}
 				
 			} else if(this.installingModuleName == "resolve") {
 				
 				let nodeModulesPaths = this.globalXerPath + "\\" + this.installingModuleName + "\\lib\\node-modules-paths.js"
 				
+				nodeModulesPaths = this.convertBackSlash(nodeModulesPaths)
+				
 				let origResolve = fs.readFileSync(nodeModulesPaths).toString()
 				
-				fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, "['node_modules', process.env.USERPROFILE + '\\\\.node_modules']"))
+				if(!origResolve.includes(".node_modules")) {
+				
+					support = this.convertBackSlash("['node_modules', " + HOME_FOLDER + " + '\\\\.node_modules']")
+				
+					fs.writeFileSync(nodeModulesPaths, origResolve.replace(/\[('|")node_modules('|")\]/, support))
+					
+				}
 				
 			}
 			
