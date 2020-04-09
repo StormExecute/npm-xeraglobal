@@ -1,5 +1,75 @@
 # npm-xeraglobal changelog
 
+## v2.3.0
+
+English:
+
+***Note: using ```sudo npm``` on Linux is the best option for any action with modules with the --xer flag.***
+
+* Added support for linux:
+	* Support for the standard node.js package.
+	* Nvm (node version manager) support.
+	* Sudo support for ```node```, ```gulp```, ```webpack``` and so on. Note: it requires -E or --preserve-env flags from sudo, since Linux uses saveGetEnv.
+* Fixed some problems with inserting supports for modules that don't take the ```%HOME%/.node_modules/``` path.
+* Added the experimental flag ```--delete-trash``` (-dt). Its main task is to delete directories and files located in the root of the module and do not affect the main functionality, if, of course, they are there. It only checks for ```%HOME%/.node_modules/``` path, and the global folder will contain absolutely all files. README, as well as license, authors, and contributors files, are ignored and will not be deleted. Modules installed via @ are also ignored (for example, ```sudo npm i @babel/core -x```). Will be found and deleted:
+	* Following folders:
+		* .idea
+		* .git
+		* .github
+		* example
+		* examples
+		* test
+		* tests
+	* Following files:
+		* .npmignore
+		* .npmrc
+		* .gitattributes
+		* .gitignore
+		* .gitmodules
+		* .editorconfig
+		* .eslintignore
+		* .eslintrc
+		* .travis.yml
+		* .tidelift.yml
+		* appveyor.yml
+		* make + Make
+		* makefile + Makefile
+		* rakefile + Rakefile
+
+Русский:
+
+***Примечание: использование ```sudo npm``` на линуксе - лучший вариант для любого действия с модулями при флаге --xer.***
+
+* Добавлена поддержка для linux:
+	* Поддержка стандартного пакета node.js.
+	* Поддержка nvm (node version manager).
+	* Поддержка sudo для ```node```, ```gulp```, ```webpack``` и так далее. Примечание: требует -E, --preserve-env от sudo, так как для линукса используется saveGetEnv.
+* Пофикшены некоторые проблемы со вставкой поддержек для модулей, которые не учитывают путь ```%HOME%/.node_modules/```.
+* Добавлен экспериментальный флаг ```--delete-trash``` (-dt). Его основная задача - удаление директорий и файлов, находящихся в корне модуля и не влияющих на основную функциональность, если, конечно, они там есть. Проверяется лишь путь ```%HOME%/.node_modules/```, в глобальной папке будут абсолютно все файлы. README, а также файлы лицензий, авторов и контрибуторов, естественно, игнорируются и не будут удалены. Также игнорируются модули, установленые через @ (к примеру ```sudo npm i @babel/core -x```). Будут найдены и удалены:
+	* Следующие папки:
+		* .idea
+		* .git
+		* .github
+		* example
+		* examples
+		* test
+		* tests
+	* Следующие файлы:
+		* .npmignore
+		* .npmrc
+		* .gitattributes
+		* .gitignore
+		* .gitmodules
+		* .editorconfig
+		* .eslintignore
+		* .eslintrc
+		* .travis.yml
+		* .tidelift.yml
+		* appveyor.yml
+		* make + Make
+		* makefile + Makefile
+		* rakefile + Rakefile
+
 ## v2.2.2
 
 English:
@@ -64,14 +134,14 @@ English:
 
 * Added git, the structure of the project has been refactored.
 * Post-fixed installation paths and added additional checking of the global installation directory.
-* Fixed the usual npm remove (previously dependencies were set first before removing the module)
+* Fixed the usual npm remove (previously dependencies were set first before removing the module).
 * Additional "sort" and "reverse" commands have been added to the ```npm xerup``` command.
 
 Русский:
 
 * Добавлена система контроля версий, структура проекта переработана.
 * Дофикшены установочные пути, а также добавлена дополнительная проверка директории глобальной установки.
-* Пофикшен обычный npm remove (раньше устанавливал зависимости, прежде чем удалить модуль)
+* Пофикшен обычный npm remove (раньше устанавливал зависимости, прежде чем удалить модуль).
 * В команду ```npm xerup``` добавлены дополнительные команды "sort" и "reverse".
 	
 ## v2.1.1
