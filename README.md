@@ -8,9 +8,9 @@ The simple npm-cli modifier. Originally written for npm version 6.14.2, there ma
 
 Простой модификатор npm-cli. Изначально написано для npm версии 6.14.2, возможны конфликты с прошлыми версиями, проверьте сами. Должно работать с 5-ми версиями.
 
-It adds the ```--xer (-x)``` (as main) and ```--delete-trash (-dt)``` flags, and the ```xerup``` command to npm. The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_modules/ and %GlobalDirNpm% folders, while keeping dependencies in package.json.
+It adds the ```--xer (-x)``` (as main), ```--delete-trash (-dt)``` and ```--use-this-dir (-utd)``` flags, and the ```xerup``` command to npm. The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_modules/ and %GlobalDirNpm% folders, while keeping dependencies in package.json.
 
-Добавляет флаги --xer (главный), --delete-trash, а также команду xerup к npm. Основная задача флага -x заключается в том, что он ставит модули в папки %HOMEPATH%/.node_modules/ и %GlobalDirNpm%, при этом сохраняя зависимости в package.json.
+Добавляет флаги ```--xer (главный)```, ```--delete-trash (-dt)```, ```--use-this-dir (-utd)```, а также команду ```xerup``` к npm. Основная задача флага -x заключается в том, что он ставит модули в папки %HOMEPATH%/.node_modules/ и %GlobalDirNpm%, при этом сохраняя зависимости в package.json.
 
 # Table of Contents | Оглавление
 
@@ -23,9 +23,10 @@ It adds the ```--xer (-x)``` (as main) and ```--delete-trash (-dt)``` flags, and
 7. [Sorting dependencies | Сортировка зависимостей](#sortingDependencies)
 8. [Reversing dependencies | Перестановка зависимостей](#reversingDependencies)
 9. [Removing dependencies | Удаление зависимостей](#removingDependencies)
-10. [Undo | Откат](#undo)
-11. [Examples | Примеры](#examples)
-12. [Contacts | Контакты](#contacts)
+10. [About --use-this-dir and --no-save flags | О флагах --use-this-dir и --no-save](#useThisDirectoryAndNoSaveFlags)
+11. [Undo | Откат](#undo)
+12. [Examples | Примеры](#examples)
+13. [Contacts | Контакты](#contacts)
 
 # Changelog | Список изменений
 
@@ -57,7 +58,7 @@ sudo npm i npm-xeraglobal -g && sudo npmxer
 ***Для linux рекомендуется использовать ```sudo npm``` на постоянной основе.***
 
 ```bash
-(sudo?) npm [i|install] <some-module> [-x|--x|-xer|--xer|-xera|--xera|-хуй|--хуй|-хер|--хер] ([-dt|--delete-trash]?)
+(sudo?) npm [i|install] <some-module> [-x|--x|-xer|--xer|-xera|--xera|-хуй|--хуй|-хер|--хер] ([-dt|--delete-trash]?) ([-utd|--use-this-dir]?)
 ```
 
 <a name="troubleshooting"></a>
@@ -75,8 +76,17 @@ This error occurs because node.js uses ```safeGetEnv("HOME")``` in ```Module._in
 npm i webpack -x && npm i webpack-cli -g
 ```
 
+***Npm update:***
+
+```
+npm i -g npm && npmxer
+```
+
 <a name="delete-trash"></a>
 # About --delete-trash flag | О флаге --delete-trash
+```bash
+npm i -x <some-module> [-dt|--dt|--delete-trash|-DT|--DT]
+```
 
 Its main task is to delete directories and files located in the root of the module and do not affect the main functionality, if, of course, they are there. It only checks for ```%HOME%/.node_modules/``` path, and the global folder will contain absolutely all files. README, as well as license, authors, and contributors files, are ignored and will not be deleted. Modules installed via @ are also ignored (for example, ```sudo npm i @babel/core -x```).
 
@@ -162,6 +172,29 @@ npm [xerup|upxer|upp||uppackages] [null|d|r|rm|remove|delete] <pkg1,pkg2...> [-S
 ```
 
 Example: ```npm upp null gulp webpack webpack-stream del```
+
+<a name="useThisDirectoryAndNoSaveFlags"></a>
+# About --use-this-dir and --no-save flags | О флагах --use-this-dir и --no-save
+
+***--use-this-dir:***
+
+The **--use-this-dir**(--utd) flag was added to write dependencies to the directory from which the installation is performed (when installing ***into a project*** without --utd, the ***main project package*** is located).
+
+Флаг **--use-this-dir**(--utd) добавлен для записывания зависимостей именно в ту директорию, откуда выполняется установка(если идёт установка ***в проект*** без --utd - находится ***именно проектный пакет***).
+
+```bash
+npm [install|xerup] <some-module> [-utd|--utd|-UTD|--UTD|--use-this-dir|--use-this-directory|--use-dir]
+```
+
+***--no-save:***
+
+Does not write dependencies. Adapted to the flag ```--xer```.
+
+Не записывает зависимости. Адаптировано под флаг ```--xer```.
+
+```bash
+npm i <some-module> [-ns|--ns|--no-save|-NS|--NS]
+```
 
 <a name="undo"></a>
 # Undo | Откат
