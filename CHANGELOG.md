@@ -1,5 +1,19 @@
 # npm-xeraglobal changelog
 
+## v2.3.1
+
+English:
+
+* Added support for the **--no-save**(--ns) flag for **--xer** flag.
+* The **--use-this-dir**(--utd) flag was added to write dependencies to the directory from which the installation is performed (when installing ***into a project*** without --utd, the ***main project package*** is located).
+* Added the possibility to use two hyphens for the following flags: ***-dt, -ns, -utd***. And different use cases.
+
+Русский:
+
+* Добавлена поддержка флага **--no-save**(--ns) для флага **--xer**.
+* Добавлен флаг **--use-this-dir**(--utd) для записывания зависимостей именно в ту директорию, откуда выполняется установка(если идёт установка ***в проект*** без --utd - находится ***именно проектный пакет***).
+* Флагам ***-dt, -ns, -utd*** добавлена возможность использования с двумя дефисами, а также более различных вариаций.
+
 ## v2.3.0
 
 English:
