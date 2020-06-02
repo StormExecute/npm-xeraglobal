@@ -73,15 +73,49 @@
 	
 	
 	const xerArgv = ["x", "xer", "xera", "хер", "хуй"];
+	
+	const parsedXerArgv = [].concat(
+	
+		xerArgv.map(
+		
+			arg => "-" + arg
 			
-	const parsedXerArgv = xerArgv.map(arg => arg = "-" + arg).concat( xerArgv.map(arg => arg = "--" + arg) )
+		)
+		
+	).concat(
+	
+		xerArgv.map(
+		
+			arg => "--" + arg
+			
+		) 
+		
+	);
 	
 	const isXerInstalling = !!(process.argv.filter(el => parsedXerArgv.indexOf(el) !== -1).length && !isXerUp)
 	
 	
+	const xerArgFlags = {
+		
+		save: ["-S", "--save"],
+		saveDev: ["-D", "--save-dev"],
+		
+		deleteTrash: ["-dt", "--dt", "--delete-trash", "-DT", "--DT"],
+		
+		noSave: ["-ns", "--ns", "--no-save", "-NS", "--NS"],
+		
+		useThisDir: ["-utd", "--utd", "--use-this-dir", "--use-this-directory", "--use-dir", "-UTD", "--UTD"],
+		
+	};
 	
-	var SaveArgv = 0, SaveDevArgv = 0, DeleteTrash = 0
+	var SaveArgv = 0,
+		SaveDevArgv = 0,
+		DeleteTrash = 0,
+		NoSave = 0,
+		UseThisDirectory = 0;
 	
+	//xerInstall + xerUpdate + xerDelete
+	UseThisDirectory = process.argv.filter(el => xerArgFlags.useThisDir.indexOf(el) !== -1).length
 	
 	
 	if(isXerInstalling && !isGlobalArgvOriginal) {
@@ -89,24 +123,54 @@
 		process.argv.push("-g")
 		
 	}
-	
+		
 	
 	if(isXerInstalling || isXerUp) {
 		
-		SaveArgv = process.argv.filter(el => el == "-S" || el == "--save").length
+		SaveArgv = process.argv.filter(el => xerArgFlags.save.indexOf(el) !== -1).length
 		
-		SaveDevArgv = process.argv.filter(el => el == "-D" || el == "--save-dev").length
+		SaveDevArgv = process.argv.filter(el => xerArgFlags.saveDev.indexOf(el) !== -1).length
+		
+		
+		//define here for check conflicts
+		
+		DeleteTrash = process.argv.filter(el => xerArgFlags.deleteTrash.indexOf(el) !== -1).length
+		
+		NoSave = process.argv.filter(el => xerArgFlags.noSave.indexOf(el) !== -1).length
+		
+	}
+	
+	/* if(isXerInstalling) {
 		
 		DeleteTrash = process.argv.filter(el => el == "-dt" || el == "--delete-trash").length
 		
-		if(isXerUp && DeleteTrash) throw new Error("npm xerup conflicts with flag --delete-trash");
+		NoSave = process.argv.filter(el => el == "-ns" || el == "--no-save").length
 		
-		if(isXerUp) XerUpArgv = XerUpArgv.filter(el => el != "-S" && el != "--save" && el != "-D" && el != "--save-dev")
+	} */
+	
+	if(isXerUp) {
+		
+		if(DeleteTrash || NoSave) {
+			
+			throw new Error("npm xerup conflicts with flags: --delete-trash, --no-save")
+			
+		}
+		
+		XerUpArgv = XerUpArgv.filter(el => {
+			
+			return el != "-S" && 
+					el != "--save" && 
+					
+					el != "-D" && 
+					el != "--save-dev" &&
+					
+					xerArgFlags.useThisDir.indexOf(el) === -1
+			
+		})
 		
 	}
 	
 	
-
 	log.verbose('cli', process.argv)
 
 	const conf = nopt(types, shorthands)
@@ -542,7 +606,7 @@
 			
 			this.globalDirRealPkgPath = this.globalDirRealModulePath + "\\package.json"
 			
-			this.projectPkgPath = npm.localPrefix + "\\package.json"
+			this.projectPkgPath = this.projectDirectory + "\\package.json"
 			
 			this.xerMainModulePath = this.globalXerPath + "\\" + this.installingModuleName
 			
@@ -652,10 +716,13 @@
 			
 			this.beforeDefinePaths()
 
+			//npm r module -x
 			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && this.isXerInstalling) return this.bCRRemove()
 				
+			//npm xerup module
 			if(this.isXerUp) return this.xerUp()
 				
+			//npm r module
 			if(this.npmRemoveCommands.indexOf(npm.command) !== -1 && !this.isXerInstalling && npm.argv[0] && !isGlobalArgvOriginal) this.backupPkg()
 			
 		}
@@ -673,6 +740,8 @@
 			_self.SaveDevArgv = SaveDevArgv
 			
 			_self.DeleteTrash = DeleteTrash
+			
+			_self.NoSave = NoSave
 			
 			_self.SaveArgv = SaveArgv
 			
@@ -703,9 +772,11 @@
 				
 				if(_self.isXerInstalling || _self.isXerUp || (!_self.isXerInstalling && _self.npmRemoveCommands.indexOf(npm.command) !== -1 && npm.argv[0] && !isGlobalArgvOriginal)) {
 					
+					_self.projectDirectory = UseThisDirectory ? process.cwd() : npm.localPrefix
+					
 					_self.defaultPkgJSONIfNotExists = {
 						"__modifiedBy": "npm-xeraglobal",
-						"name": path.basename(npm.localPrefix),
+						"name": path.basename(_self.projectDirectory),
 						"version": "1.0.0",
 						"description": "",
 						"main": "index.js",
@@ -719,8 +790,8 @@
 					}
 					
 					_self.GLOBAL_DIR = process.platform.startsWith("win") 
-						? npm.globalDir : 
-						process.execPath.includes(".nvm") 
+						? npm.globalDir
+						: process.execPath.includes(".nvm") 
 						? path.join(process.execPath, "../../lib/node_modules") 
 						: "/usr/lib/node_modules"
 					
@@ -786,7 +857,7 @@
 			
 			if(this.DeleteTrash && this.installingModuleName[0] != "@") this.DeleteTrashAction()
 			
-			this.writeDependencies()
+			if(!this.NoSave) this.writeDependencies()
 			
 		}
 		
@@ -858,7 +929,7 @@
 			
 			trashFolders.concat(trashFiles).concat(trashFilesUpperCase).forEach(trash => {
 				
-				let trashPath = _self.convertBackSlash(_self.xerMainModulePath + "\\" + trash);
+				const trashPath = _self.convertBackSlash(_self.xerMainModulePath + "\\" + trash);
 				
 				if(fs.existsSync(trashPath)) rimraf.sync(trashPath);
 				
@@ -957,7 +1028,7 @@
 			if(!fs.existsSync(this.projectPkgPath)) fs.writeFileSync(this.projectPkgPath, JSON.stringify(this.defaultPkgJSONIfNotExists, null, '\t'))
 			
 			const projectPackage = this.writeAndParsePackageSync(this.projectPkgPath)
-			
+
 			let globarDirPkg = {}
 			
 			if(fs.existsSync(this.globalDirPkgPath)) globarDirPkg = this.writeAndParsePackageSync(this.globalDirPkgPath) 
