@@ -1,0 +1,1 @@
+export = (...args: any) => console.log("\n[npm-xeraglobal]:", ...args);
