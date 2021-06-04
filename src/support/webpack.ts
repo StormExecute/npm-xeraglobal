@@ -10,7 +10,7 @@ const pattern: RegExp = /\[['"]node_modules['"]\]/;
 
 export = [ ["webpack", "webpack-stream"], function () {
 
-	const resolverFactoryPath = nodePath.join( this.xerModulePath, "./node_modules/enhanced-resolve/lib/ResolverFactory.js" );
+	const resolverFactoryPath = nodePath.join( this.npmModulePath, "./node_modules/enhanced-resolve/lib/ResolverFactory.js" );
 
 	const origContent = fs.readFileSync(resolverFactoryPath).toString();
 
