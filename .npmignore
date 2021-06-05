@@ -1,5 +1,15 @@
-.git
-.gitignore
-.gitattributes
+dirty/
+bin/
+src/
 
-tests
+.git/
+.idea/
+
+node_modules/
+
+compileTs.js
+
+.gitignore
+.npmignore
+package-lock.json
+tsconfig.json
