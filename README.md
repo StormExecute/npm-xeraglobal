@@ -1,99 +1,85 @@
-# npm-xeraglobal
+# npm-xeraglobal [![NPM version][npm-image]][npm-url]
 
-***This module requires a command line with administrator rules! For linux, use ```sudo```, for windows - open cmd as an administrator.***
+This tool installs modules in the default global directory(%GlobalDirNpm%) and the global home directory(%HOMEPATH%/.node_modules/), which allows you to include them in your project due to the specificity of the require function.
 
-***Этот модуль требует командную строку с правами администратора! Для linux используйте ```sudo```, для windows же - откройте cmd от имени администратора.***
+# Table of Contents
 
-The simple npm-cli modifier. Originally written for npm version 6.14.2, there may be conflicts with last versions, check yourself. It might work with 5 versions.
+1. [Installation](#_installation)
+2. [Migration](#_migration)
+3. [Usage](#_usage)
+4. [Troubleshooting](#_troubleshooting)
+5. [About --delete-trash flag](#delete-trash)
+6. [Local installing modules](#installingModules)
+7. [Local removing modules](#removingModules)
+8. [Packages upgrade](#upgrade)
+9. [Sorting dependencies](#sortingDependencies)
+10. [Reversing dependencies](#reversingDependencies)
+11. [Removing dependencies](#removingDependencies)
+12. [About --use-this-dir and --no-save flags](#useThisDirectoryAndNoSaveFlags)
+13. [Unlinking](#unlink)
+14. [Linking](#link)
+15. [Global delete](#globalDelete)
+16. [Examples](#_examples)
+17. [Contacts](#_contacts)
 
-Простой модификатор npm-cli. Изначально написано для npm версии 6.14.2, возможны конфликты с прошлыми версиями, проверьте сами. Должно работать с 5-ми версиями.
-
-It adds the ```--xer (-x)``` (as main), ```--delete-trash (-dt)``` and ```--use-this-dir (-utd)``` flags, and the ```xerup``` command to npm. The main purpose of the -x flag is that it puts modules in the %HOMEPATH%/.node_modules/ and %GlobalDirNpm% folders, while keeping dependencies in package.json.
-
-Добавляет флаги ```--xer (главный)```, ```--delete-trash (-dt)```, ```--use-this-dir (-utd)```, а также команду ```xerup``` к npm. Основная задача флага -x заключается в том, что он ставит модули в папки %HOMEPATH%/.node_modules/ и %GlobalDirNpm%, при этом сохраняя зависимости в package.json.
-
-# Table of Contents | Оглавление
-
-1. [Installation | Установка](#installation)
-2. [Usage | Использование](#usage)
-3. [Troubleshooting | Устранение неполадок](#troubleshooting)
-4. [About --delete-trash flag | О флаге --delete-trash](#delete-trash)
-5. [Removing modules | Удаление модулей](#removingModules)
-6. [Packages upgrade | Обновление пакетов](#upgrade)
-7. [Sorting dependencies | Сортировка зависимостей](#sortingDependencies)
-8. [Reversing dependencies | Перестановка зависимостей](#reversingDependencies)
-9. [Removing dependencies | Удаление зависимостей](#removingDependencies)
-10. [About --use-this-dir and --no-save flags | О флагах --use-this-dir и --no-save](#useThisDirectoryAndNoSaveFlags)
-11. [Undo | Откат](#undo)
-12. [Examples | Примеры](#examples)
-13. [Contacts | Контакты](#contacts)
-
-# Changelog | Список изменений
+# Changelog
 
 [HERE!](https://github.com/StormExecute/npm-xeraglobal/blob/master/CHANGELOG.md)
 
-<a name="installation"></a>
-# Installation | Установка
+<a name="_installation"></a>
+# Installation
 
-***To update, you should also run these commands.***
+***To update, you should also run this command.***
 
-***Для обновления вам также следует выполнить данные команды.***
-
-**Windows:**
 ```bash
 npm install npm-xeraglobal -g
-npmxer
 ```
 
-**Linux:**
-```bash
-sudo npm i npm-xeraglobal -g && sudo npmxer
-```
+<a name="_migration"></a>
+# Migration
 
-<a name="usage"></a>
-# Usage | Использование
-
-***For linux, it is recommended to use ```sudo npm``` on a permanent basis.***
-
-***Для linux рекомендуется использовать ```sudo npm``` на постоянной основе.***
+***To migrate from version 2 to version 3 run the following commands:***
 
 ```bash
-(sudo?) npm [i|install] <some-module> [-x|--x|-xer|--xer|-xera|--xera|-хуй|--хуй|-хер|--хер] ([-dt|--delete-trash]?) ([-utd|--use-this-dir]?)
+npmunxer && npm i npm -g && npm install npm-xeraglobal -g
 ```
 
-<a name="troubleshooting"></a>
-# Troubleshooting | Устранение неполадок
+<a name="_usage"></a>
+# Usage
+
+```bash
+(sudo)? [npmx|npmxer|npmxeraglobal] [i|install] <...module > [--dt|--ns|--utd|--sd]
+```
+
+<a name="_troubleshooting"></a>
+# Troubleshooting
 
 ***```sudo gulp task```: module gulp not found, as well as ```sudo webpack``` and ```sudo node```: module <moduleName> not found***:
 
 This error occurs because node.js uses ```safeGetEnv("HOME")``` in ```Module._initPaths```. The solution is to use ```sudo --preserve-env (-E)``` - ```sudo -E gulp task```, ```sudo -E webpack```, ```sudo -E node nodefile```.
 
-Такая ошибка возникает из-за того, что node.js использует ```safeGetEnv("HOME")``` в ```Module._initPaths```. Решением будет использование ```sudo --preserve-env (-E)``` - ```sudo -E gulp task```, ```sudo -E webpack```, ```sudo -E node nodefile```.
-
 ***Webpack installation:***
 
 ```
-npm i webpack -x && npm i webpack-cli -g
+npm i webpack-cli --global && npmxer install webpack
 ```
 
-***Npm update:***
+***Gulp installation:***
 
 ```
-npm i -g npm && npmxer
+npmxer install gulp
 ```
 
 <a name="delete-trash"></a>
-# About --delete-trash flag | О флаге --delete-trash
+# About --delete-trash flag
 ```bash
-npm i -x <some-module> [-dt|--dt|--delete-trash|-DT|--DT]
+npmx install <...module > [-dt|--dt|--delete-trash]
 ```
 
-Its main task is to delete directories and files located in the root of the module and do not affect the main functionality, if, of course, they are there. It only checks for ```%HOME%/.node_modules/``` path, and the global folder will contain absolutely all files. README, as well as license, authors, and contributors files, are ignored and will not be deleted. Modules installed via @ are also ignored (for example, ```sudo npm i @babel/core -x```).
+Its main task is to delete directories and files located in the root of the module and do not affect the main functionality, if, of course, they are there. It only checks for ```%HOME%/.node_modules/``` path, and the global folder will contain absolutely all files. README, as well as license, authors, and contributors files, are ignored and will not be deleted. Modules installed via @ are also ignored (for example, ```npmx i @babel/core```).
 
-Его основная задача - удаление директорий и файлов, находящихся в корне модуля и не влияющих на основную функциональность, если, конечно, они там есть. Проверяется лишь путь ```%HOME%/.node_modules/```, в глобальной папке будут абсолютно все файлы. README, а также файлы лицензий, авторов и контрибуторов, естественно, игнорируются и не будут удалены. Также игнорируются модули, установленые через @ (к примеру ```sudo npm i @babel/core -x```).
-
-Will be found and deleted: (Rus: Будут найдены и удалены)
-- Following folders: (Rus: Следующие директории)
+Will be found and deleted:
+- Following folders:
 	- .idea
 	- .git
 	- .github
@@ -101,7 +87,7 @@ Will be found and deleted: (Rus: Будут найдены и удалены)
 	- examples
 	- test
 	- tests
-- Following files: (Rus: Следующие файлы)
+- Following files:
 	- .npmignore
 	- .npmrc
 	- .gitattributes
@@ -116,123 +102,136 @@ Will be found and deleted: (Rus: Будут найдены и удалены)
 	- make + Make
 	- makefile + Makefile
 	- rakefile + Rakefile
+	
+<a name="installingModules"></a>
+# Local installing modules
 
-<a name="removingModules"></a>
-# Removing modules | Удаление модулей
+The official package manager can create nasty conflicts with already installed globally modules using this module, for example, delete information about them in package.json.
+
+To install modules locally without conflicts, use the following command:
+
 ```bash
-npm [r|rm|un|remove|uninstall] <some-module> [-x|--x|-xer|--xer|-xera|--xera|-хуй|--хуй|-хер|--хер]
+npmx [installLocal|il] <...module>
 ```
 
+Example: ```npmx il someModule```.
+Almost equivalent to this: ```npm i someModule```.
+
+<a name="removingModules"></a>
+# Local removing modules
+
+The official package manager can create nasty conflicts with already installed globally modules using this module, for example, delete information about them in package.json.
+
+To remove local modules without conflicts, use the following command: 
+
+```bash
+npmx [r|rm|rem|remove|uninstall|del|dl|d] <...module>
+```
+
+Example: ```npmxer r someModule```.
+Almost equivalent to this: ```npm r someModule```.
+
 <a name="upgrade"></a>
-# Packages upgrade | Обновление пакетов
+# Packages upgrade
 
-This will update the package.json in a new project without a new upload.
-
-Это обновит package.json в новом проекте без новой загрузки.
+This will update the package.json in the new project without loading the module again.
 
 If the package.json does not exist - it will be created.
 
-Если package.json не существует - он будет создан.
-
 ```bash
-npm [xerup|upxer|upp||uppackages] <pkg1,pkg2...> [-S|-D|--save|--save-dev](optional, default: -S)
+npmx [xerup|upxer|up|uppackages] <...packages> [-D|--save-dev]
 ```
 
+Example: ```npmx up gulp webpack -D```.
+
 <a name="sortingDependencies"></a>
-# Sorting dependencies | Сортировка зависимостей
+# Sorting dependencies
 
 This will sort dependencies and devDependencies by name.
 
-Это отсортирует dependencies и devDependencies по имени.
-
 ```bash
-npm [xerup|upxer|upp||uppackages] [s|srt|st|sort]
+npmx [xerup|upxer|up|uppackages] [s|srt|st|sort]
 ```
 
-Example: ```npm xerup sort```.
+Example: ```npmx xerup sort```.
 
 <a name="reversingDependencies"></a>
-# Reversing dependencies | Перестановка зависимостей
+# Reversing dependencies
 
 This will reverse the contrary dependencies and devDependencies.
 
-Это переставит dependencies и devDependencies местами.
-
 ```bash
-npm [xerup|upxer|upp||uppackages] [rv|rvs|rvrs|reverse]
+npmx [xerup|upxer|up|uppackages] [rv|rvs|rvrs|reverse]
 ```
 
-Example: ```npm upxer rvrs```.
+Example: ```npmx upxer rvrs```.
 
 <a name="removingDependencies"></a>
-# Removing dependencies | Удаление зависимостей
+# Removing dependencies
 
 ```bash
-npm [xerup|upxer|upp||uppackages] [null|d|r|rm|remove|delete] <pkg1,pkg2...> [-S|-D|--save|--save-dev](optional, default: -S)
+npmx [xerup|upxer|up|uppackages] [null|d|r|rm|rmv|remove|delete|dlt|dl|del] <...packages> [-D|--save-dev]
 ```
 
-Example: ```npm upp null gulp webpack webpack-stream del```
+Example: ```npm uppackages null gulp webpack webpack-stream del```
 
 <a name="useThisDirectoryAndNoSaveFlags"></a>
-# About --use-this-dir and --no-save flags | О флагах --use-this-dir и --no-save
+# About --use-this-dir and --no-save flags
 
 ***--use-this-dir:***
 
 The **--use-this-dir**(--utd) flag was added to write dependencies to the directory from which the installation is performed (when installing ***into a project*** without --utd, the ***main project package*** is located).
 
-Флаг **--use-this-dir**(--utd) добавлен для записывания зависимостей именно в ту директорию, откуда выполняется установка(если идёт установка ***в проект*** без --utd - находится ***именно проектный пакет***).
-
 ```bash
-npm [install|xerup] <some-module> [-utd|--utd|-UTD|--UTD|--use-this-dir|--use-this-directory|--use-dir]
+npmx [install|i] <...module> [--utd|--use-this-dir]
 ```
 
 ***--no-save:***
 
-Does not write dependencies. Adapted to the flag ```--xer```.
-
-Не записывает зависимости. Адаптировано под флаг ```--xer```.
+Does not write dependencies to package.json .
 
 ```bash
-npm i <some-module> [-ns|--ns|--no-save|-NS|--NS]
+npmx [install|i] <...module> [--ns|--no-save]
 ```
 
-<a name="undo"></a>
-# Undo | Откат
+<a name="unlink"></a>
+# Unlinking
 
-This will restore the original npm-cli.
-
-Это восстановит оригинальный npm-cli.
+This command will remove references to the global module from %HOMEPATH%/.node_modules/ .
 
 ```bash
-npmunxer
+npmx [unlink|unl] <...module>
 ```
 
-<a name="examples"></a>
-# Examples | Примеры
+<a name="link"></a>
+# Linking
 
-First install the modules with the -x flag.
+This command will allow you to re-link global modules to %HOMEPATH%/.node_modules/ .
 
-Сначала установим модули с флагом -x.
-
-```
-D:\NodeProjects\yourProject> npm i gulp -x -D
-D:\NodeProjects\yourProject> npm i browser-sync --xer -D
+```bash
+npmx [link|l|lnk] <...module>
 ```
 
-***FOR RUSSIANS ONLY!***
+<a name="globalDelete"></a>
+# Global delete
 
-***ТОЛЬКО ДЛЯ РУССКИХ!***
+This collection of commands will allow you to uninstall what was installed with npmx install: 
 
-Так, впринципе, тоже можно :D
+```bash
+npm unlink <...module> && npm remove --global <...module>
+```
+
+<a name="_examples"></a>
+# Examples
+
+First, install the modules.
 
 ```
-D:\NodeProjects\yourProject> npm i gulp -хуй --save-dev
-D:\NodeProjects\yourProject> npm i browser-sync --хер --save-dev
+D:\NodeProjects\yourProject> npmx i gulp
+D:\NodeProjects\yourProject> npmx i browser-sync -D
 ```
 
 Then create a file "index.js".
-
-Затем создайте файл "index.js".
 
 ```javascript
 "use strict";
@@ -258,8 +257,6 @@ gulp.task("serve", () => {
 
 And run it!
 
-И запустите это!
-
 ```
 D:\NodeProjects\yourProject> gulp hello
 D:\NodeProjects\yourProject> gulp serve
@@ -268,20 +265,14 @@ D:\NodeProjects\yourProject> gulp serve
 
 For new projects, gulp and browser-sync (in the context of this example) will be available as local modules.
 
-Для новых проектов будут доступны gulp и browser-sync (в контексте данного примера) в качестве локальных модулей.
-
 **Now let's create a new project and update its dependencies.**
-
-**Теперь давайте создадим новый проект и обновим его зависимости.**
 
 ```
 D:\NodeProjects\yourProject> cd .. && mkdir testProject && cd testProject
-D:\NodeProjects\testProject> npm xerup gulp browser-sync -D
+D:\NodeProjects\testProject> npmx xerup gulp browser-sync -D
 ```
 
 Creating index.js:
-
-Создаём index.js:
 
 ```javascript
 "use strict";
@@ -296,23 +287,26 @@ gulp.task("default", cb => {
 
 Run it:
 
-Запускаем:
-
 ```
 D:\NodeProjects\testProject> gulp
 ```
 
-<a name="contacts"></a>
-# Contacts | Контакты
+<a name="_contacts"></a>
+# Contacts
 
 **Yandex Mail** - vladimirvsevolodovi@yandex.ru
 
 **Github** - https://github.com/StormExecute/
 
-# Github
+# Platforms
 
-**StormExecute** - https://github.com/StormExecute/npm-xeraglobal/
+**Github** - https://github.com/StormExecute/npm-xeraglobal/
 
-# License | Лицензия
+**NPM** - https://www.npmjs.com/package/npm-xeraglobal/
+
+# License
 
 **MIT** - https://mit-license.org/
+
+[npm-url]: https://www.npmjs.com/package/npm-xeraglobal
+[npm-image]: https://img.shields.io/npm/v/npm-xeraglobal.svg
