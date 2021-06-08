@@ -1,6 +1,6 @@
 # npm-xeraglobal changelog
 
-## v3.0.1
+## v3.0.1 && v3.0.2
 
 * Fixes for correct performance on Windows.
 
