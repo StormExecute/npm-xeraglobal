@@ -1,5 +1,11 @@
 # npm-xeraglobal changelog
 
+## v3.0.0
+
+* Refactoring done: modular breaking, switching to typescipt, a separate main command that no longer affects the original npm.
+* Linking instead of normal file transfer to %HOMEPATH%/.node_modules/ .
+* New subcommands: link, unlink, installLocal, etc.
+
 ## v2.3.1
 
 English:
