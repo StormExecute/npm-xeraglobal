@@ -4,7 +4,15 @@ if(platform == "w" && !process.env.USERPROFILE) {
 
 	throw new Error("process.env.USERPROFILE is not defined!");
 
-} else if(!process.env.HOME) {
+}
+
+if(platform == "w" && !process.env.APPDATA) {
+
+	throw new Error("process.env.APPDATA is not defined!");
+
+}
+
+if(platform == "l" && !process.env.HOME) {
 
 	throw new Error("process.env.HOME is not defined!");
 

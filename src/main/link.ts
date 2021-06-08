@@ -19,7 +19,7 @@ let globalNpmPath: string;
 
 if(platform == "w") {
 
-	globalNpmPath = npm.globalDir;
+	globalNpmPath = nodePath.join(process.env.APPDATA, "./npm/node_modules");
 
 } else if(process.execPath.includes(".nvm")) {
 

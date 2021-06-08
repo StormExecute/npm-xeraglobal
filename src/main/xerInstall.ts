@@ -20,7 +20,7 @@ let globalNpmPath: string;
 
 if(platform == "w") {
 
-	globalNpmPath = npm.globalDir;
+	globalNpmPath = nodePath.join(process.env.APPDATA, "./npm/node_modules");
 
 } else if(process.execPath.includes(".nvm")) {
 
@@ -198,7 +198,7 @@ class xerInstall {
 
 	xerInstall(): void {
 
-		npmXerLog("Start copying to " + this.xerModulePath + "/");
+		npmXerLog("Start copying to " + this.xerModulePath);
 
 		const testPackage = createDefaultPackageJsonIfNotExists( this.npmModulePath );
 

@@ -1,10 +1,11 @@
 import nodePath = require("path");
+import { execSync } from "child_process";
 
 let paths: string = "";
 
 if(process.platform.startsWith("win")) {
 
-	paths = nodePath.join( process.execPath, "../node_modules/npm/lib/" );
+	paths = nodePath.join( execSync("where npm").toString().split("\r\n")[0], "../node_modules/npm/lib/" );
 
 } else if(process.platform.includes("linux") && process.execPath.includes(".nvm")) {
 
