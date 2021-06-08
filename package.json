@@ -1,25 +1,35 @@
 {
-  "name": "npm-xeraglobal",
-  "version": "2.3.1",
-  "author": "cotenochek",
-  "license": "MIT",
-  "description": "Npm-cli modifier. Adds the -x flag to install modules in %HOMEPATH%/.npm_modules (Windows and Linux only)",
-  "homepage": "https://github.com/StormExecute/npm-xeraglobal/#readme",
-  "repository": {
-	"type" : "git",
-	"url" : "https://github.com/StormExecute/npm-xeraglobal.git"
-  },
-  "bin": {
-    "npmxer": "bin/global.js",
-    "npmunxer": "bin/globalUndo.js"
-  },
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "keywords": [
-    "npm",
-    "npm-cli",
-    "npm-cli-modifier"
-  ]
+	"name": "npm-xeraglobal",
+	"version": "3.0.0",
+	"author": "cotenochek",
+	"license": "MIT",
+	"description": "Tool for one-time installation of modules for each project to %HOMEPATH%/.npm_modules (Windows and Linux only)",
+	"homepage": "https://github.com/StormExecute/npm-xeraglobal/#readme",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/StormExecute/npm-xeraglobal.git"
+	},
+	"engines": {
+		"node": ">=10.12.0"
+	},
+	"bin": {
+		"npmxeraglobal": "dist/bin/cli.js",
+		"npmxer": "dist/bin/cli.js",
+		"npmx": "dist/bin/cli.js"
+	},
+	"main": "index.js",
+	"scripts": {
+		"compile": "node compileTs.js"
+	},
+	"keywords": [
+		"npm",
+		"npm-cli",
+		"npm-cli-modifier",
+		"npmx",
+		"npm-xeraglobal",
+		"xeraglobal"
+	],
+	"dependencies": {
+		"fargv": "^1.1.0"
+	}
 }
