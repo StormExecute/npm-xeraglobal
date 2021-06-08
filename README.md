@@ -4,7 +4,7 @@ This tool installs modules in the default global directory(%GlobalDirNpm%) and t
 
 # Table of Contents
 
-1. [Installation](#_installation)
+1. [Installation](#install)
 2. [Migration](#_migration)
 3. [Usage](#_usage)
 4. [Troubleshooting](#_troubleshooting)
@@ -26,7 +26,7 @@ This tool installs modules in the default global directory(%GlobalDirNpm%) and t
 
 [HERE!](https://github.com/StormExecute/npm-xeraglobal/blob/master/CHANGELOG.md)
 
-<a name="_installation"></a>
+<a name="install"></a>
 # Installation
 
 ***To update, you should also run this command.***

@@ -1,5 +1,9 @@
 # npm-xeraglobal changelog
 
+## v3.0.1
+
+* Fixes for correct performance on Windows.
+
 ## v3.0.0
 
 * Refactoring done: modular breaking, switching to typescipt, a separate main command that no longer affects the original npm.
