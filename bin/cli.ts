@@ -98,6 +98,8 @@ fargv
 			ns: [[undefined, "$notFill"], ["no-save"]],
 			utd: [[undefined, "$notFill"], ["use-this-dir"]],
 			sd: [[undefined, "$notFill"], ["save-dev", "D"]],
+			as: [[undefined, "$notFill"], ["auto-support", "ass"]],
+			asr: [[undefined, "$notFill"], ["auto-support-real", "real-ass"]],
 
 		},
 		nextCommandsAsArray: true,
