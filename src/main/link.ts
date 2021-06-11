@@ -4,6 +4,8 @@ import fs = require("fs");
 import xerLinking from "../xerLinking";
 import writeSupport from "../writeSupport";
 
+import autoSupport from "../support/_autoSupport";
+
 import * as homeDir from "../getHomeDir";
 import * as platform from "../getPlatform";
 import * as npmLibPath from "../getNPMPaths";
@@ -64,6 +66,16 @@ export = (flags: anyObjectT, objects: string[]): void => {
 				npmModulePath,
 
 			}, object);
+
+			if(flags.hasOwnProperty("asr")) {
+
+				autoSupport(npmModulePath);
+
+			} else if(flags.hasOwnProperty("as")) {
+
+				autoSupport(xerModulePath);
+
+			}
 
 		}
 

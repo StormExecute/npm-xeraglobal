@@ -43,6 +43,8 @@ const rimraf: anyObjectOrFnT = require(nodePath.join( npmLibPath, npmModulesPath
 import xerLinking from "../xerLinking";
 import writeSupport from "../writeSupport";
 
+import autoSupport from "../support/_autoSupport";
+
 // @ts-ignore
 import * as readPackage from "../readPackage";
 
@@ -228,6 +230,16 @@ class xerInstall {
 		}
 
 		writeSupport.call(this, this.realModuleName);
+
+		if(this.flags.hasOwnProperty("asr")) {
+
+			autoSupport(this.npmModulePath);
+
+		} else if(this.flags.hasOwnProperty("as")) {
+
+			autoSupport(this.xerModulePath);
+
+		}
 
 		if(this.flags.hasOwnProperty("dt")) {
 
