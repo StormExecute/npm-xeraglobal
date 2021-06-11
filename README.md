@@ -4,10 +4,10 @@ This tool installs modules in the default global directory(%GlobalDirNpm%) and t
 
 # Table of Contents
 
-1. [Installation](#install)
-2. [Migration](#_migration)
-3. [Usage](#_usage)
-4. [Troubleshooting](#_troubleshooting)
+1. [Installation](#installation)
+2. [Migration](#migration)
+3. [Usage](#usage)
+4. [Troubleshooting](#troubleshooting)
 5. [About --delete-trash flag](#delete-trash)
 6. [Local installing modules](#installingModules)
 7. [Local removing modules](#removingModules)
@@ -15,18 +15,19 @@ This tool installs modules in the default global directory(%GlobalDirNpm%) and t
 9. [Sorting dependencies](#sortingDependencies)
 10. [Reversing dependencies](#reversingDependencies)
 11. [Removing dependencies](#removingDependencies)
-12. [About --use-this-dir and --no-save flags](#useThisDirectoryAndNoSaveFlags)
+12. [About --use-this-dir, --no-save and --auto-support flags](#useThisDirectoryAndNoSaveFlags)
 13. [Unlinking](#unlink)
 14. [Linking](#link)
 15. [Global delete](#globalDelete)
-16. [Examples](#_examples)
-17. [Contacts](#_contacts)
+16. [Examples](#examples)
+17. [Contacts](#contacts)
 
 # Changelog
 
 [HERE!](https://github.com/StormExecute/npm-xeraglobal/blob/master/CHANGELOG.md)
 
-<a name="install"></a>
+<div id='installation'></div>
+
 # Installation
 
 ***To update, you should also run this command.***
@@ -34,8 +35,8 @@ This tool installs modules in the default global directory(%GlobalDirNpm%) and t
 ```bash
 npm install npm-xeraglobal -g
 ```
+<div id='migration'></div>
 
-<a name="_migration"></a>
 # Migration
 
 ***To migrate from version 2 to version 3 run the following commands:***
@@ -43,15 +44,15 @@ npm install npm-xeraglobal -g
 ```bash
 npmunxer && npm i npm -g && npm install npm-xeraglobal -g
 ```
+<div id='usage'></div>
 
-<a name="_usage"></a>
 # Usage
 
 ```bash
-(sudo)? [npmx|npmxer|npmxeraglobal] [i|install] <...module > [--dt|--ns|--utd|--sd]
+(sudo)? [npmx|npmxer|npmxeraglobal] [i|install] <...module > [--dt|--ns|--utd|--sd|--as|--asr]
 ```
+<div id='troubleshooting'></div>
 
-<a name="_troubleshooting"></a>
 # Troubleshooting
 
 ***```sudo gulp task```: module gulp not found, as well as ```sudo webpack``` and ```sudo node```: module <moduleName> not found***:
@@ -69,8 +70,8 @@ npm i webpack-cli --global && npmxer install webpack
 ```
 npmxer install gulp
 ```
+<div id='delete-trash'></div>
 
-<a name="delete-trash"></a>
 # About --delete-trash flag
 ```bash
 npmx install <...module > [-dt|--dt|--delete-trash]
@@ -103,7 +104,8 @@ Will be found and deleted:
 	- makefile + Makefile
 	- rakefile + Rakefile
 	
-<a name="installingModules"></a>
+<div id='installingModules'></div>
+
 # Local installing modules
 
 The official package manager can create nasty conflicts with already installed globally modules using this module, for example, delete information about them in package.json.
@@ -117,7 +119,8 @@ npmx [installLocal|il] <...module>
 Example: ```npmx il someModule```.
 Almost equivalent to this: ```npm i someModule```.
 
-<a name="removingModules"></a>
+<div id='removingModules'></div>
+
 # Local removing modules
 
 The official package manager can create nasty conflicts with already installed globally modules using this module, for example, delete information about them in package.json.
@@ -131,7 +134,8 @@ npmx [r|rm|rem|remove|uninstall|del|dl|d] <...module>
 Example: ```npmxer r someModule```.
 Almost equivalent to this: ```npm r someModule```.
 
-<a name="upgrade"></a>
+<div id='upgrade'></div>
+
 # Packages upgrade
 
 This will update the package.json in the new project without loading the module again.
@@ -144,7 +148,8 @@ npmx [xerup|upxer|up|uppackages] <...packages> [-D|--save-dev]
 
 Example: ```npmx up gulp webpack -D```.
 
-<a name="sortingDependencies"></a>
+<div id='sortingDependencies'></div>
+
 # Sorting dependencies
 
 This will sort dependencies and devDependencies by name.
@@ -155,7 +160,8 @@ npmx [xerup|upxer|up|uppackages] [s|srt|st|sort]
 
 Example: ```npmx xerup sort```.
 
-<a name="reversingDependencies"></a>
+<div id='reversingDependencies'></div>
+
 # Reversing dependencies
 
 This will reverse the contrary dependencies and devDependencies.
@@ -166,7 +172,8 @@ npmx [xerup|upxer|up|uppackages] [rv|rvs|rvrs|reverse]
 
 Example: ```npmx upxer rvrs```.
 
-<a name="removingDependencies"></a>
+<div id='removingDependencies'></div>
+
 # Removing dependencies
 
 ```bash
@@ -175,8 +182,9 @@ npmx [xerup|upxer|up|uppackages] [null|d|r|rm|rmv|remove|delete|dlt|dl|del] <...
 
 Example: ```npm uppackages null gulp webpack webpack-stream del```
 
-<a name="useThisDirectoryAndNoSaveFlags"></a>
-# About --use-this-dir and --no-save flags
+<div id='useThisDirectoryAndNoSaveFlags'></div>
+
+# About --use-this-dir, --no-save and --auto-support flags
 
 ***--use-this-dir:***
 
@@ -194,7 +202,24 @@ Does not write dependencies to package.json .
 npmx [install|i] <...module> [--ns|--no-save]
 ```
 
-<a name="unlink"></a>
+***--auto-support:***
+
+Attempts to write automatic recommended support to dependencies.
+
+```bash
+npmx [install|i] <...module> [--as|--auto-support|--ass]
+```
+
+***--auto-support-real:***
+
+The same as --auto-support only changes the original file and not the linked one.
+
+```bash
+npmx [install|i] <...module> [--asr|--auto-support-real|--real-ass]
+```
+
+<div id='unlink'></div>
+
 # Unlinking
 
 This command will remove references to the global module from %HOMEPATH%/.node_modules/ .
@@ -203,7 +228,8 @@ This command will remove references to the global module from %HOMEPATH%/.node_m
 npmx [unlink|unl] <...module>
 ```
 
-<a name="link"></a>
+<div id='link'></div>
+
 # Linking
 
 This command will allow you to re-link global modules to %HOMEPATH%/.node_modules/ .
@@ -212,7 +238,8 @@ This command will allow you to re-link global modules to %HOMEPATH%/.node_module
 npmx [link|l|lnk] <...module>
 ```
 
-<a name="globalDelete"></a>
+<div id='globalDelete'></div>
+
 # Global delete
 
 This collection of commands will allow you to uninstall what was installed with npmx install: 
@@ -221,7 +248,8 @@ This collection of commands will allow you to uninstall what was installed with 
 npm unlink <...module> && npm remove --global <...module>
 ```
 
-<a name="_examples"></a>
+<div id='examples'></div>
+
 # Examples
 
 First, install the modules.
@@ -291,7 +319,8 @@ Run it:
 D:\NodeProjects\testProject> gulp
 ```
 
-<a name="_contacts"></a>
+<div id='contacts'></div>
+
 # Contacts
 
 **Yandex Mail** - vladimirvsevolodovi@yandex.ru

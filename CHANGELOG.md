@@ -1,5 +1,9 @@
 # npm-xeraglobal changelog
 
+## 3.1.0
+
+* Added --auto-support and --auto-support-real flags to try write support in dependencies.
+
 ## v3.0.1 && v3.0.2
 
 * Fixes for correct performance on Windows.
